@@ -1,0 +1,7 @@
+path: ../demo_detection/dataset/training_data
+train: images/train
+val: images/val
+
+names:
+  0: car
+  1: truck
