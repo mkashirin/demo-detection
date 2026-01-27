@@ -1,0 +1,7 @@
+path: ../demo-detection/dataset/test_task_dl_26_12_2025_yolo
+train: images/train
+val: images/val
+
+names:
+  0: car
+  1: truck

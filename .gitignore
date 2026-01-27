@@ -15,10 +15,15 @@ wheels/
 # Model training and inference artifacts
 runs/
 models/
-models.zip
 
-# Dataset directories
+# Data and export directories
 dataset/
+export/
+submission/
+*.zip
+
+# Vendored libraries
+vendor/
 
 # macOS filesystem artifacts
 .DS_Store
