@@ -1,7 +1,7 @@
 #include <argparse/argparse.hpp>
 #include <iostream>
 #include <onnxruntime_cxx_api.h>
-#include <opencv2/dnn.hpp> // Необходимо для NMSBoxes
+#include <opencv2/dnn.hpp>
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <vector>
@@ -35,7 +35,6 @@ class YOLO26Detector {
     void process_frame(cv::Mat &frame, float conf_thresh, float iou_thresh) {
         const int imgsz = 1280;
 
-        // 1. Препроцессинг
         cv::Mat blob = cv::dnn::blobFromImage(
             frame,
             1.0 / 255.0,
@@ -56,7 +55,6 @@ class YOLO26Detector {
             input_shape.size()
         );
 
-        // 2. Инференс
         auto output_tensors = session->Run(
             Ort::RunOptions{nullptr},
             &input_name,
@@ -68,7 +66,6 @@ class YOLO26Detector {
 
         float *raw_output = output_tensors[0].GetTensorMutableData<float>();
 
-        // Контейнеры для результатов перед NMS
         std::vector<cv::Rect> bboxes;
         std::vector<float> scores;
         std::vector<int> class_ids;
@@ -81,8 +78,6 @@ class YOLO26Detector {
             if (score < conf_thresh)
                 continue;
 
-            // Масштабирование координат (исходя из того, что экспорт в пикселях
-            // 0-1280)
             float x1 = det[0] * frame.cols / imgsz;
             float y1 = det[1] * frame.rows / imgsz;
             float x2 = det[2] * frame.cols / imgsz;
@@ -103,11 +98,9 @@ class YOLO26Detector {
             class_ids.push_back(static_cast<int>(det[5]));
         }
 
-        // 4. Выполнение NMS для фильтрации перекрывающихся боксов
         std::vector<int> indices;
         cv::dnn::NMSBoxes(bboxes, scores, conf_thresh, iou_thresh, indices);
 
-        // 5. Отрисовка отфильтрованных результатов
         for (int idx : indices) {
             cv::Rect box = bboxes[idx];
             float score = scores[idx];
@@ -122,7 +115,6 @@ class YOLO26Detector {
             cv::Size labelSize = cv::getTextSize(
                 label, cv::FONT_HERSHEY_SIMPLEX, 0.6, 1, &baseLine
             );
-            // Фон для текста (опционально, для читаемости)
             cv::rectangle(
                 frame,
                 cv::Rect(
@@ -163,7 +155,6 @@ int main(int argc, char **argv) {
         .required()
         .help("Path to output video");
 
-    // Добавление параметров порога
     program.add_argument("--conf").default_value(0.5f).scan<'g', float>().help(
         "Confidence threshold"
     );
