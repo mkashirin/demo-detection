@@ -15,6 +15,8 @@ wheels/
 # Model training and inference artifacts
 runs/
 models/
+# YOLO runs AMP tests, using YOLO26n
+src/py/yolo26n.pt
 
 # Data and export directories
 dataset/
