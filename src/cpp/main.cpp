@@ -8,9 +8,9 @@
 
 using namespace std;
 
-class YOLO26Detector {
+class DemoDetector {
   public:
-    YOLO26Detector(const std::string &model_path) {
+    DemoDetector(const std::string &model_path) {
         env = Ort::Env(ORT_LOGGING_LEVEL_WARNING, "YOLO26_Inference");
         Ort::SessionOptions session_options;
 
@@ -70,7 +70,6 @@ class YOLO26Detector {
         std::vector<float> scores;
         std::vector<int> class_ids;
 
-        // 3. Сбор кандидатов (YOLO26 обычно выдает 300 предсказаний)
         for (int i = 0; i < 300; ++i) {
             float *det = raw_output + (i * 6);
             float score = det[4];
@@ -178,7 +177,7 @@ int main(int argc, char **argv) {
     float iou_v = program.get<float>("--iou");
 
     try {
-        YOLO26Detector detector(model_path);
+        DemoDetector detector(model_path);
         cv::VideoCapture cap(input_path);
         if (!cap.isOpened())
             throw std::runtime_error("Failed to open input video.");
